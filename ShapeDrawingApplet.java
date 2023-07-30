@@ -101,3 +101,82 @@ public class ShapeDrawingApplet extends JApplet {
         add(controlPanel, BorderLayout.NORTH);
         add(drawingPanel, BorderLayout.CENTER);
     }
+    private static class DrawingPanel extends JPanel {
+        private String currentShape;
+        private Color currentColor;
+        private boolean fillShapes;
+        private boolean eraserMode;
+        private int currentThickness;
+        private int startX, startY, endX, endY;
+        private ArrayList<ShapeData> shapesList = new ArrayList<>();
+        private ArrayList<Point> penPointsList = new ArrayList<>();
+        private BufferedImage bufferImage;
+
+        public DrawingPanel() {
+            currentShape = "Line";
+            currentColor = Color.RED;
+            fillShapes = false;
+            eraserMode = false;
+            currentThickness = 1;
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    startX = e.getX();
+                    startY = e.getY();
+                    endX = startX;
+                    endY = startY;
+
+                    if (eraserMode) {
+                        for (int i = shapesList.size() - 1; i >= 0; i--) {
+                            ShapeData shapeData = shapesList.get(i);
+                            int x1 = shapeData.getStartX();
+                            int y1 = shapeData.getStartY();
+                            int x2 = shapeData.getEndX();
+                            int y2 = shapeData.getEndY();
+
+                            // Check if the pressed point is inside the shape's bounding box
+                            if (startX >= Math.min(x1, x2) && startX <= Math.max(x1, x2) &&
+                                    startY >= Math.min(y1, y2) && startY <= Math.max(y1, y2)) {
+                                shapesList.remove(i);
+                                bufferImage = null;
+                                repaint();
+                                break;
+                            }
+                        }
+
+                        setCurrentColor(getBackground()); // Change the color to the background color (eraser color)
+                    } else if (currentShape.equals("Pen")) {
+                        penPointsList.clear();
+                        penPointsList.add(new Point(startX, startY));
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    int width = e.getX() - startX;
+                    int height = e.getY() - startY;
+
+                    if (!eraserMode && !currentShape.equals("Pen")) {
+                        shapesList.add(new ShapeData(startX, startY, endX, endY, currentShape, currentColor, fillShapes, currentThickness));
+                    }
+
+                    bufferImage = null;
+                    repaint();
+                }
+            });
+
+            addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    endX = e.getX();
+                    endY = e.getY();
+
+                    if (currentShape.equals("Pen")) {
+                        penPointsList.add(new Point(endX, endY));
+                    }
+
+                    repaint();
+                }
+         });
+         }
