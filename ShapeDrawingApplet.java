@@ -34,7 +34,7 @@ public class ShapeDrawingApplet extends JApplet {
         colorButton = new JButton("Color");
         colorButton.setPreferredSize(new Dimension(80, 20));
         colorButton.addActionListener(new ActionListener() {
-            @Override
+            
             public void actionPerformed(ActionEvent e) {
                 JColorChooser colorChooser = new JColorChooser();
                 Color chosenColor = colorChooser.showDialog(ShapeDrawingApplet.this, "Choose Color", drawingPanel.getCurrentColor());
@@ -63,21 +63,21 @@ public class ShapeDrawingApplet extends JApplet {
         controlPanel.add(thicknessSlider);
 
         eraserButton.addActionListener(new ActionListener() {
-            @Override
+            
             public void actionPerformed(ActionEvent e) {
                 drawingPanel.setEraserMode(!drawingPanel.isEraserMode());
             }
         });
 
         shapeComboBox.addActionListener(new ActionListener() {
-            @Override
+           
             public void actionPerformed(ActionEvent e) {
                 drawingPanel.setCurrentShape(shapeComboBox.getSelectedItem().toString());
             }
         });
 
         filledCheckBox.addActionListener(new ActionListener() {
-            @Override
+           
             public void actionPerformed(ActionEvent e) {
                 drawingPanel.setFillShapes(filledCheckBox.isSelected());
             }
@@ -89,7 +89,7 @@ public class ShapeDrawingApplet extends JApplet {
         });
 
         penButton.addActionListener(new ActionListener() {
-            @Override
+            
             public void actionPerformed(ActionEvent e) {
                 drawingPanel.setCurrentColor(Color.BLACK);
                 drawingPanel.setCurrentThickness(2);
@@ -120,7 +120,7 @@ public class ShapeDrawingApplet extends JApplet {
             currentThickness = 1;
 
             addMouseListener(new MouseAdapter() {
-                @Override
+                
                 public void mousePressed(MouseEvent e) {
                     startX = e.getX();
                     startY = e.getY();
@@ -167,7 +167,7 @@ public class ShapeDrawingApplet extends JApplet {
             });
 
             addMouseMotionListener(new MouseAdapter() {
-                @Override
+               
                 public void mouseDragged(MouseEvent e) {
                     endX = e.getX();
                     endY = e.getY();
@@ -211,7 +211,7 @@ public void setCurrentShape(String shape) {
             return currentColor;
         }
 
-        @Override
+       
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
