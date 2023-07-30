@@ -43,3 +43,61 @@ public class ShapeDrawingApplet extends JApplet {
                 }
             }
         });
+		filledCheckBox = new JCheckBox("Fill Shapes");
+        eraserButton = new JButton("Eraser");
+        penButton = new JButton("Pen");
+        thicknessSlider = new JSlider(1, 10, 1);
+        drawingPanel = new DrawingPanel();
+
+        ButtonGroup radioGroup = new ButtonGroup();
+
+        JPanel controlPanel = new JPanel();
+        controlPanel.add(new JLabel("Shape: "));
+        controlPanel.add(shapeComboBox);
+        controlPanel.add(new JLabel("Color: "));
+        controlPanel.add(colorButton);
+        controlPanel.add(filledCheckBox);
+        controlPanel.add(eraserButton);
+        controlPanel.add(penButton);
+        controlPanel.add(new JLabel("Thickness: "));
+        controlPanel.add(thicknessSlider);
+
+        eraserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                drawingPanel.setEraserMode(!drawingPanel.isEraserMode());
+            }
+        });
+
+        shapeComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                drawingPanel.setCurrentShape(shapeComboBox.getSelectedItem().toString());
+            }
+        });
+
+        filledCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                drawingPanel.setFillShapes(filledCheckBox.isSelected());
+            }
+        });
+
+        thicknessSlider.addChangeListener(e -> {
+            int thickness = thicknessSlider.getValue();
+            drawingPanel.setCurrentThickness(thickness);
+        });
+
+        penButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                drawingPanel.setCurrentColor(Color.BLACK);
+                drawingPanel.setCurrentThickness(2);
+                drawingPanel.setEraserMode(false);
+                drawingPanel.setCurrentShape("Pen");
+            }
+        });
+
+        add(controlPanel, BorderLayout.NORTH);
+        add(drawingPanel, BorderLayout.CENTER);
+    }
