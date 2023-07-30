@@ -180,3 +180,112 @@ public class ShapeDrawingApplet extends JApplet {
                 }
          });
          }
+public void setCurrentShape(String shape) {
+            currentShape = shape;
+        }
+
+        public void setCurrentColor(Color color) {
+            currentColor = color;
+        }
+
+        public void setFillShapes(boolean fill) {
+            fillShapes = fill;
+        }
+
+        public boolean isEraserMode() {
+            return eraserMode;
+        }
+
+        public void setEraserMode(boolean eraser) {
+            eraserMode = eraser;
+            if (eraserMode) {
+                currentColor = getBackground();
+            }
+        }
+
+        public void setCurrentThickness(int thickness) {
+            currentThickness = thickness;
+        }
+
+        public Color getCurrentColor() {
+            return currentColor;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            if (bufferImage == null) {
+                bufferImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = (Graphics2D) bufferImage.getGraphics();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setStroke(new BasicStroke(currentThickness));
+                for (ShapeData shapeData : shapesList) {
+                    g2d.setColor(shapeData.getColor());
+                    String shape = shapeData.getShape();
+                    int x1 = shapeData.getStartX();
+                    int y1 = shapeData.getStartY();
+                    int x2 = shapeData.getEndX();
+                    int y2 = shapeData.getEndY();
+                    if (shape.equals("Line")) {
+                        g2d.drawLine(x1, y1, x2, y2);
+                    } else if (shape.equals("Rectangle")) {
+                        int width = x2 - x1;
+                        int height = y2 - y1;
+                        if (shapeData.isFillShapes()) {
+                            g2d.fillRect(x1, y1, width, height);
+                        } else {
+                            g2d.drawRect(x1, y1, width, height);
+                        }
+                    } else if (shape.equals("Oval")) {
+                        int width = x2 - x1;
+                        int height = y2 - y1;
+                        if (shapeData.isFillShapes()) {
+                            g2d.fillOval(x1, y1, width, height);
+                        } else {
+                            g2d.drawOval(x1, y1, width, height);
+                        }
+                    } else if (shape.equals("Triangle")) {
+                        int[] xPoints = {x1, (x1 + x2) / 2, x2};
+                        int[] yPoints = {y2, y1, y2};
+                        if (shapeData.isFillShapes()) {
+                            g2d.fillPolygon(xPoints, yPoints, 3);
+                        } else {
+                            g2d.drawPolygon(xPoints, yPoints, 3);
+                        }
+                    } else if (shape.equals("Star")) {
+                        int armLength = (int) (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / 2);
+                        int cx = (x1 + x2) / 2;
+                        int cy = (y1 + y2) / 2;
+                        int outerArmLength = armLength * 2;
+                        int innerArmLength = armLength;
+                        int rotation = -18; // Change this value to adjust the star shape
+                        int[] xPoints = new int[10];
+                        int[] yPoints = new int[10];
+                        for (int i = 0; i < 10; i++) {
+                            int angle = (i * 36 + rotation) % 360;
+                            if (i % 2 == 0) {
+                                xPoints[i] = cx + (int) (Math.cos(Math.toRadians(angle)) * outerArmLength);
+                                yPoints[i] = cy + (int) (Math.sin(Math.toRadians(angle)) * outerArmLength);
+                            } else {
+                                xPoints[i] = cx + (int) (Math.cos(Math.toRadians(angle)) * innerArmLength);
+                                yPoints[i] = cy + (int) (Math.sin(Math.toRadians(angle)) * innerArmLength);
+                            }
+                        }
+                        if (shapeData.isFillShapes()) {
+                            g2d.fillPolygon(xPoints, yPoints, 10);
+                        } else {
+                            g2d.drawPolygon(xPoints, yPoints, 10);
+                        }
+                    } else if (shape.equals("Parallelogram")) {
+                        int[] xPoints = {x1, x1 + (x2 - x1) / 3, x2, x1 + (x2 - x1) * 2 / 3};
+                        int[] yPoints = {y1, y1, y2, y2};
+                        if (shapeData.isFillShapes()) {
+                            g2d.fillPolygon(xPoints, yPoints, 4);
+                        } else {
+                            g2d.drawPolygon(xPoints, yPoints, 4);
+                        }
+                    }
+                }
+                g2d.dispose();
+            }
