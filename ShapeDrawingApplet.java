@@ -289,3 +289,142 @@ public void setCurrentShape(String shape) {
                 }
                 g2d.dispose();
             }
+			if (bufferImage != null) {
+                g.drawImage(bufferImage, 0, 0, null);
+            }
+
+            if (!eraserMode && !currentShape.equals("Pen")) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(currentColor);
+                g2d.setStroke(new BasicStroke(currentThickness));
+                if (currentShape.equals("Line")) {
+                    g2d.drawLine(startX, startY, endX, endY);
+                } else if (currentShape.equals("Rectangle")) {
+                    int width = endX - startX;
+                    int height = endY - startY;
+                    if (fillShapes) {
+                        g2d.fillRect(startX, startY, width, height);
+                    } else {
+                        g2d.drawRect(startX, startY, width, height);
+                    }
+                } else if (currentShape.equals("Oval")) {
+                    int width = endX - startX;
+                    int height = endY - startY;
+                    if (fillShapes) {
+                        g2d.fillOval(startX, startY, width, height);
+                    } else {
+                        g2d.drawOval(startX, startY, width, height);
+                    }
+                } else if (currentShape.equals("Triangle")) {
+                    int[] xPoints = {startX, (startX + endX) / 2, endX};
+                    int[] yPoints = {endY, startY, endY};
+                    if (fillShapes) {
+                        g2d.fillPolygon(xPoints, yPoints, 3);
+                    } else {
+                        g2d.drawPolygon(xPoints, yPoints, 3);
+                    }
+                } else if (currentShape.equals("Star")) {
+                    int armLength = (int) (Math.sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY)) / 2);
+                    int cx = (startX + endX) / 2;
+                    int cy = (startY + endY) / 2;
+                    int outerArmLength = armLength * 2;
+                    int innerArmLength = armLength;
+                    int rotation = -18; // Change this value to adjust the star shape
+                    int[] xPoints = new int[10];
+                    int[] yPoints = new int[10];
+                    for (int i = 0; i < 10; i++) {
+                        int angle = (i * 36 + rotation) % 360;
+                        if (i % 2 == 0) {
+                            xPoints[i] = cx + (int) (Math.cos(Math.toRadians(angle)) * outerArmLength);
+                            yPoints[i] = cy + (int) (Math.sin(Math.toRadians(angle)) * outerArmLength);
+                        } else {
+                            xPoints[i] = cx + (int) (Math.cos(Math.toRadians(angle)) * innerArmLength);
+                            yPoints[i] = cy + (int) (Math.sin(Math.toRadians(angle)) * innerArmLength);
+                        }
+                    }
+                    if (fillShapes) {
+                        g2d.fillPolygon(xPoints, yPoints, 10);
+                    } else {
+                        g2d.drawPolygon(xPoints, yPoints, 10);
+                    }
+                } else if (currentShape.equals("Parallelogram")) {
+                    int[] xPoints = {startX, startX + (endX - startX) / 3, endX, startX + (endX - startX) * 2 / 3};
+                    int[] yPoints = {startY, startY, endY, endY};
+                    if (fillShapes) {
+                        g2d.fillPolygon(xPoints, yPoints, 4);
+                    } else {
+                        g2d.drawPolygon(xPoints, yPoints, 4);
+                    }
+                }
+            } else if (!eraserMode && currentShape.equals("Pen")) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(currentColor);
+                g2d.setStroke(new BasicStroke(currentThickness));
+                if (!penPointsList.isEmpty()) {
+                    Point prevPoint = penPointsList.get(0);
+                    for (int i = 1; i < penPointsList.size(); i++) {
+                        Point currentPoint = penPointsList.get(i);
+                        g2d.drawLine(prevPoint.x, prevPoint.y, currentPoint.x, currentPoint.y);
+                        prevPoint = currentPoint;
+                    }
+                }
+            }
+        }
+    }
+
+    private static class ShapeData {
+        private int startX;
+        private int startY;
+        private int endX;
+        private int endY;
+        private String shape;
+        private Color color;
+        private boolean fillShapes;
+        private int thickness;
+
+        public ShapeData(int startX, int startY, int endX, int endY, String shape, Color color, boolean fillShapes, int thickness) {
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
+            this.shape = shape;
+            this.color = color;
+            this.fillShapes = fillShapes;
+            this.thickness = thickness;
+        }
+
+        public int getStartX() {
+            return startX;
+        }
+
+        public int getStartY() {
+            return startY;
+        }
+
+        public int getEndX() {
+            return endX;
+        }
+
+        public int getEndY() {
+            return endY;
+        }
+
+        public String getShape() {
+            return shape;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public boolean isFillShapes() {
+            return fillShapes;
+        }
+
+        public int getThickness() {
+            return thickness;
+        }
+    }
+}
